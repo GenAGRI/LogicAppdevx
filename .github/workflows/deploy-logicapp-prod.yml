@@ -1,0 +1,30 @@
+name: Deploy Logic App to Prod
+
+on:
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    
+
+    - name: Zip Logic App project
+      run: |
+        zip -r logicapp.zip . -x "*.git*" "*.github*"
+
+    - name: Deploy Logic App to Prod
+      run: |
+        az logicapp deployment source config-zip \
+          --name logicapp-uatx \
+          --resource-group logicapp-uat-001 \
+          --src logicapp.zip
