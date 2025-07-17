@@ -1,0 +1,49 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Response": {
+        "type": "Response",
+        "kind": "Http",
+        "inputs": {
+          "statusCode": 200,
+          "body": "@parameters('ResponseText')"
+        },
+        "runAfter": {
+          "Upload_blob_to_storage_container": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "Upload_blob_to_storage_container": {
+        "type": "ServiceProvider",
+        "inputs": {
+          "parameters": {
+            "containerName": "trial",
+            "blobName": "logdev",
+            "content": "ok",
+            "overrideIfExists": "true"
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "AzureBlob",
+            "operationId": "uploadBlob",
+            "serviceProviderId": "/serviceProviders/AzureBlob"
+          }
+        },
+        "runAfter": {}
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "getrequest": {
+        "type": "Request",
+        "kind": "Http",
+        "inputs": {
+          "method": "GET"
+        }
+      }
+    }
+  },
+  "kind": "Stateful"
+}
